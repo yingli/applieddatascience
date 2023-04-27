@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
-def add_date_cols(baskets):
-    baskets['datetime'] = pd.to_datetime(baskets['placed_at'])
+def add_date_cols(baskets, date_col = "placed_at"):
+    baskets['datetime'] = pd.to_datetime(baskets[date_col])
     baskets['year'] = baskets["datetime"].dt.year
     baskets['month'] = baskets["datetime"].dt.month
     baskets['date'] = baskets["datetime"].dt.date
@@ -82,3 +82,14 @@ def get_skus_by_day(baskets):
         num_merchants_by_day = ('merchant_id', 'nunique'),
     ).reset_index()
     return skus_by_day
+
+def get_top_cat_attributes(baskets):
+    top_cat_attributes = baskets.groupby(['top_cat']).agg(
+        avg_price = ('price', 'mean'),
+        total_spent = ('spent', 'sum'),
+        total_quantity = ('qty' , 'sum'),
+        num_orders = ('order_id', 'nunique'), 
+        num_days = ('date' , 'nunique'),
+        num_merchants = ('merchant_id', 'nunique')
+        ).reset_index()
+    return top_cat_attributes
